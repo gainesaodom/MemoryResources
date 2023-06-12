@@ -89,7 +89,7 @@ def read_byte_from_memory(binaryCommand):
         GPIO.output(SerialInput_pin, bit)
         GPIO.output(SerialClock_pin, GPIO.HIGH)
         GPIO.output(SerialClock_pin, GPIO.LOW)
-    for i in range(8):
+    for i in range(data_bits):
         GPIO.output(SerialClock_pin, GPIO.HIGH)
         outputbit = GPIO.input(SerialOutput_pin)
         GPIO.output(SerialClock_pin, GPIO.LOW)
