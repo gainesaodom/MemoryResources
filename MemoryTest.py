@@ -43,10 +43,12 @@ def checkerboard_test(memory_size,step):
         
 def march_A_test(memory_size):
     for address in range(memory_size):
-        # M0               
-        oldWriteValue = 0x00
-        writeCommand = translate_command(False, address, oldWriteValue)
-        write_byte_to_memory(writeCommand)
+        # M0   
+        writeValue = 0x00            
+        for i in range(data_bits): 
+
+            writeCommand = translate_command(False, address, writeValue)
+            write_byte_to_memory(writeCommand)
     for address in range(memory_size):
         # M1
         readCommand = translate_command(True, address, 0)
@@ -105,6 +107,12 @@ def march_A_test(memory_size):
         write_byte_to_memory(writeCommand0)
     pass
 
+def readZero():
+    pass
+
+def readOne():
+    pass
+'''
 def sequence_test(memory_size, datum):
     for address in range(memory_size):
         # Write datum
@@ -117,7 +125,7 @@ def sequence_test(memory_size, datum):
         if readValue != datum:
             print(f"Sequence test failed at address {i}")
             return
-
+'''
 def translate_command(RW, address, data):
     if(RW): binaryRW = bin(3)[2:]                       # Create binary string based on byte read/write intention
     else: binaryRW = bin(2)[2:]
@@ -148,7 +156,7 @@ def write_byte_to_memory(binaryCommand):
     GPIO.output(Hold_pin, GPIO.HIGH)
     pass
 
-# Simulated memory read/write functions (replace with actual implementation)
+# Simulated memory read/write functions
 def read_byte_from_memory(binaryCommand):
     byte = []
     GPIO.output(Hold_pin, GPIO.LOW)
