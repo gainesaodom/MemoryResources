@@ -124,6 +124,17 @@ def march_A_test(memory_size):
             print(f"March A test failed at address {address}")
             return
     
+def sequence_test(memory_size, datum):
+    for address in range(memory_size):
+        # Write datum
+        write(address,datum)
+    # Verify all cells
+    for i in range(memory_size):
+        readValue = read(i)
+        if readValue != datum:
+            print(f"Sequence test failed at address {i}")
+            return
+        
 def ReadZeroWriteOneZeroOne(address): #M1
 
     for i in range(data_bits):
