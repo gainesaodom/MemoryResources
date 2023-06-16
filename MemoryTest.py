@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 
 # GPIO pin parameters
 SerialInput_pin = 10
-SerialClock_pin = 11
+SerialClock_pin = 11 
 SerialOutput_pin = 9
 Hold_pin = 8
 ChipSelect_pin = 7

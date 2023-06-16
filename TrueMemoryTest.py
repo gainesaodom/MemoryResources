@@ -2,7 +2,7 @@
 # supports reading and writing in "Byte Operation"
 # supports reading status register
 # does not support "Page Operation" or "Sequential Operation"
-# does not support writing to status register
+# does not support writing to status register 
 # Author: Amaar Ebrahim
 # Email: aae0008@auburn.edu
 

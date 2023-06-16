@@ -6,7 +6,7 @@
 # Author: Amaar Ebrahim
 # Email: aae0008@auburn.edu
 
-import spidev
+import spidev 
 
 # 23k640 instruction bytes - don't touch
 # these variables are named according to the "instruction name" they correspond 
