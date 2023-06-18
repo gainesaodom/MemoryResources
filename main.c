@@ -60,6 +60,143 @@ uint8_t checkerboard_compute_byte_value_at_address(uint8_t *address, bool checke
 	}
 }
 
+void march_A_test() {
+
+	uint8_t i;
+	uint16_t number_of_faults = 0;
+	
+	uint8_t *address_idx;
+	uint32_t max_address = 65536;
+	
+	// M0 - write 0
+	for (address_idx = (uint8_t *) 0; address_idx < max_address; address_idx++) {
+		//printf("%x\n", address_idx);
+		uint8_t next_value = (spi23x640_read_byte(address_idx) & ~(1<<i));
+		spi23x640_write_byte(address_idx, next_value);	// write 0);
+
+		printf("Writing value %04" PRIx16 "\n", next_value);
+
+	}
+
+	// M1 - read 0, write 1, write 0, write 1 (ascending order)
+	for (address_idx = (uint8_t *) 0; address_idx < max_address; address_idx++) {
+		
+		uint8_t expected value = 0;
+
+		for (i = 0; i < 8; i++) {
+
+			uint8_t actual_value = ((spi23x640_read_byte(address_idx) >> i) & 1);	
+
+			printf("Read value %04" PRIx16 "\n", actual_value);
+
+			if (expected value != actual_value) {	// read 0
+				number_of_faults++;
+				printf("Fault -- %02" PRIx8 " at %04" PRIx16 " when it should be %02" PRIx16 "\n", actual_value, address_idx, expected_value);
+			}	
+			uint8_t next_value = ((spi23x640_read_byte(address_idx) | (1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 1
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+			next_value = ((spi23x640_read_byte(address_idx) & ~(1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 0
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+			next_value = ((spi23x640_read_byte(address_idx) | (1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 1
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+		}
+	}
+	
+	// M2 - read 1, write 0, write 1 (ascending order)
+	for (address_idx = (uint8_t *) 0; address_idx < max_address; address_idx++) {
+		
+		uint8_t expected value = 1;
+
+		for (i = 0; i < 8; i++) {
+
+			uint8_t actual_value = ((spi23x640_read_byte(address_idx) >> i) & 1);	
+
+			printf("Read value %04" PRIx16 "\n", actual_value);
+
+			if (expected value != actual_value) {	// read 1
+				number_of_faults++;
+				printf("Fault -- %02" PRIx8 " at %04" PRIx16 " when it should be %02" PRIx16 "\n", actual_value, address_idx, expected_value);
+			}	
+
+			uint8_t next_value = ((spi23x640_read_byte(address_idx) & ~(1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 0
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+			next_value = ((spi23x640_read_byte(address_idx) | (1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 1
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+		}
+	}
+	
+	// M3 - read 1, write 0, write 1, write 0 (descending order)
+	for (address_idx = (uint8_t *) 0; address_idx < max_address; address_idx++) {
+		
+		uint8_t expected value = 1;
+
+		for (i = 7; i <= 0; i++) {
+
+			uint8_t actual_value = ((spi23x640_read_byte(address_idx) >> i) & 1);	
+
+			printf("Read value %04" PRIx16 "\n", actual_value);
+
+			if (expected value != actual_value) {	// read 1
+				number_of_faults++;
+				printf("Fault -- %02" PRIx8 " at %04" PRIx16 " when it should be %02" PRIx16 "\n", actual_value, address_idx, expected_value);
+			}	
+
+			uint8_t next_value = ((spi23x640_read_byte(address_idx) & ~(1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 0
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+			next_value = ((spi23x640_read_byte(address_idx) | (1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 1
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+			next_value = ((spi23x640_read_byte(address_idx) & ~(1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 0
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+		}
+	}
+	
+	// M4 - read 0, write 1, write 0 (descending order)
+	for (address_idx = (uint8_t *) 0; address_idx < max_address; address_idx++) {
+		
+		uint8_t expected value = 0;
+
+		for (i = 7; i <= 0; i++) {
+
+			uint8_t actual_value = ((spi23x640_read_byte(address_idx) >> i) & 1);	
+
+			printf("Read value %04" PRIx16 "\n", actual_value);
+
+			if (expected value != actual_value) {	// read 0
+				number_of_faults++;
+				printf("Fault -- %02" PRIx8 " at %04" PRIx16 " when it should be %02" PRIx16 "\n", actual_value, address_idx, expected_value);
+			}	
+
+			uint8_t next_value = ((spi23x640_read_byte(address_idx) | (1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 1
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+			next_value = ((spi23x640_read_byte(address_idx) & ~(1<<i));
+			spi23x640_write_byte(address_idx, next_value);	// write 0
+			printf("Writing value %04" PRIx16 "\n", next_value);
+
+		}
+	}
+
+	printf("Number of faults: %d\n", number_of_faults);
+
+}
+
 void checkerboard_test(bool first_bit_is_zero) {
 
 	uint16_t number_of_faults = 0;
