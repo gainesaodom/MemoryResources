@@ -19,7 +19,6 @@ For example:
 #include <stdint.h>
 #include <linux/spi/spidev.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <string.h>
@@ -30,11 +29,12 @@ For example:
 // constants that shouldn't be changed
 #define SPI23X640_READ_CMD 0x03 // the command to read the SRAM chip is 0000_0011
 #define SPI23X640_WRITE_CMD 0x02 // the command to write to the SRAM chip is 0000_0010
+#define SPI23X640_RDSR_CMD 0x05 // the command to read the status register
 #define SPI23X640_DEVICE "/dev/spidev0.0" // we're going to open SPI on bus 0 device 0
 #define SPI23X640_NUMBER_OF_BITS 8
 #define SPI23X640_MAX_SPEED_HZ 20000000 // see datasheet
 #define SPI23X640_DELAY_US 0 // delay in microseconds
-#define SPI23X640_NUMBER_OF_BYTES 65536
+#define SPI23X640_MAX_ADDRESS 8191
 
 typedef struct spi_ioc_transfer spi_ioc_transfer;
 
@@ -138,16 +138,53 @@ void spi23x640_close() {
     close(fd);
 }
 
+/*
+	Reads the status register of the chip
+*/
+uint8_t spi23x640_read_status_reg() {
+	// initialize transmission and receive buffers
+	uint8_t tx_buffer[2];
+	uint8_t rx_buffer[2];
+	int i;
+	for (i = 0; i < 2; i++) {
+		tx_buffer[i] = 0x00;
+		rx_buffer[i] = 0xFF;
+	}
+
+	// populate transmission buffer with the (1) SRAM command, (2) address (split among 2 bytes)
+    tx_buffer[0] = SPI23X640_RDSR_CMD;
+
+	// configure transmission
+    read_transfer.tx_buf = (unsigned long) tx_buffer;
+    read_transfer.rx_buf = (unsigned long) rx_buffer;
+    read_transfer.bits_per_word = SPI23X640_NUMBER_OF_BITS;
+    read_transfer.speed_hz = spi23x640_speed_hz;
+    read_transfer.delay_usecs = SPI23X640_DELAY_US;
+    read_transfer.len = 2;
+
+	// send transmission
+	int ret = ioctl(fd, SPI_IOC_MESSAGE(1), &read_transfer);
+	
+	// print if there's an error needed
+    handle_message_response(ret);
+        
+	//print_tx_and_rx(&tx_buffer, &rx_buffer, 4);
+
+	// the byte at the address is expected in rx_buffer[3]
+	return rx_buffer[1];
+}
+
 
 /*
     Write a single byte to a 16-bit address
 */
 void spi23x640_write_byte(uint16_t addr, uint8_t data) {
 
+
 	uint8_t tx_buffer[4] = {
 		SPI23X640_WRITE_CMD,		// write command
-		(uint8_t) addr >> 8,	// upper 8 bits of the address
-		(uint8_t) addr & 0xFF,	// lower 8 bits of the address
+		(uint8_t) (addr >> 8),	// upper 8 bits of the address
+		(uint8_t) (addr & 0xFF),	// lower 8 bits of the address
 	       	data			// data byte
 	};		
 
@@ -185,8 +222,9 @@ uint8_t spi23x640_read_byte(uint16_t addr) {
 
 	// populate transmission buffer with the (1) SRAM command, (2) address (split among 2 bytes)
     tx_buffer[0] = SPI23X640_READ_CMD;
-    tx_buffer[1] = (uint8_t) addr >> 8; // upper half of address
-    tx_buffer[2] = (uint8_t) addr & 0xFF; // lower half of address
+    tx_buffer[1] = (uint8_t) (addr >> 8); // upper half of address
+    tx_buffer[2] = (uint8_t) (addr & 0xFF); // lower half of address
+
 
 	// configure transmission
     read_transfer.tx_buf = (unsigned long) tx_buffer;
